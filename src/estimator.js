@@ -27,6 +27,7 @@ const currentlyInfected = (reportedCases, resBody) => {
 
 const infectionsByRequestedTime = (timeToElapse, resBody) => {
   const factor = normalizeDecimal(timeToElapse / 3);
+
   resBody.impact.infectionsByRequestedTime = (
     resBody.impact.currentlyInfected * (2 ** factor)
   );
@@ -40,11 +41,11 @@ const infectionsByRequestedTime = (timeToElapse, resBody) => {
 
 // challenge 2
 const severeCasesByRequestedTime = (resBody) => {
-  resBody.impact.severeCasesByRequestedTime = normalizeDecimal(
+  resBody.impact.severeCasesByRequestedTime = (
     resBody.impact.infectionsByRequestedTime * 0.15
   );
 
-  resBody.severeImpact.severeCasesByRequestedTime = normalizeDecimal(
+  resBody.severeImpact.severeCasesByRequestedTime = (
     resBody.severeImpact.infectionsByRequestedTime * 0.15
   );
 
