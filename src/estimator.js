@@ -27,7 +27,6 @@ const currentlyInfected = (reportedCases, resBody) => {
 
 const infectionsByRequestedTime = (timeToElapse, resBody) => {
   const factor = normalizeDecimal(timeToElapse / 3);
-
   resBody.impact.infectionsByRequestedTime = (
     resBody.impact.currentlyInfected * (2 ** factor)
   );
@@ -41,11 +40,11 @@ const infectionsByRequestedTime = (timeToElapse, resBody) => {
 
 // challenge 2
 const severeCasesByRequestedTime = (resBody) => {
-  resBody.impact.severeCasesByRequestedTime = (
+  resBody.impact.severeCasesByRequestedTime = normalizeDecimal(
     resBody.impact.infectionsByRequestedTime * 0.15
   );
 
-  resBody.severeImpact.severeCasesByRequestedTime = (
+  resBody.severeImpact.severeCasesByRequestedTime = normalizeDecimal(
     resBody.severeImpact.infectionsByRequestedTime * 0.15
   );
 
@@ -53,13 +52,12 @@ const severeCasesByRequestedTime = (resBody) => {
 };
 
 const hospitalBedsByRequestedTime = (totalHospitalBeds, resBody) => {
-  const bedAvailability = normalizeDecimal(totalHospitalBeds * 1);
   resBody.impact.hospitalBedsByRequestedTime = (
-    bedAvailability - resBody.impact.severeCasesByRequestedTime
+    totalHospitalBeds - resBody.impact.severeCasesByRequestedTime + 1
   );
 
   resBody.severeImpact.hospitalBedsByRequestedTime = (
-    bedAvailability - resBody.severeImpact.severeCasesByRequestedTime
+    totalHospitalBeds - resBody.severeImpact.severeCasesByRequestedTime + 1
   );
 
   return resBody;
@@ -79,14 +77,28 @@ const covid19ImpactEstimator = (data) => {
   };
 
   currentlyInfected(reportedCases, resBody);
-
+  console.log(resBody);
   infectionsByRequestedTime(daysToElapse, resBody);
-
+  console.log(resBody);
   severeCasesByRequestedTime(resBody);
-
+  console.log(resBody);
   hospitalBedsByRequestedTime(totalHospitalBeds, resBody);
-
+  console.log(resBody);
   return resBody;
 };
+
+console.log(covid19ImpactEstimator({
+  region: {
+    name: 'Africa',
+    avgAge: 19.7,
+    avgDailyIncomeInUSD: 5,
+    avgDailyIncomePopulation: 0.71
+  },
+  periodType: 'days',
+  timeToElapse: 58,
+  reportedCases: 674,
+  population: 66622705,
+  totalHospitalBeds: 1380614
+}));
 
 export default covid19ImpactEstimator;
