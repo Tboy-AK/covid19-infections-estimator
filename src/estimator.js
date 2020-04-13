@@ -49,11 +49,11 @@ const severeCasesByRequestedTime = (resBody) => {
 
 const hospitalBedsByRequestedTime = (totalHospitalBeds, resBody) => {
   resBody.impact.hospitalBedsByRequestedTime = normalizeDecimal(
-    0.35 * (totalHospitalBeds - resBody.impact.severeCasesByRequestedTime)
+    0.65 * (totalHospitalBeds - resBody.impact.severeCasesByRequestedTime)
   );
 
   resBody.severeImpact.hospitalBedsByRequestedTime = normalizeDecimal(
-    0.35 * (totalHospitalBeds - resBody.severeImpact.infectionsByRequestedTime)
+    0.65 * (totalHospitalBeds - resBody.severeImpact.infectionsByRequestedTime)
   );
 
   return resBody;
