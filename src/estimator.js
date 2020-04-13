@@ -41,11 +41,11 @@ const infectionsByRequestedTime = (timeToElapse, resBody) => {
 
 // challenge 2
 const severeCasesByRequestedTime = (resBody) => {
-  resBody.impact.severeCasesByRequestedTime = normalizeDecimal(
+  resBody.impact.severeCasesByRequestedTime = (
     resBody.impact.infectionsByRequestedTime * 0.15
   );
 
-  resBody.severeImpact.severeCasesByRequestedTime = normalizeDecimal(
+  resBody.severeImpact.severeCasesByRequestedTime = (
     resBody.severeImpact.infectionsByRequestedTime * 0.15
   );
 
@@ -53,13 +53,13 @@ const severeCasesByRequestedTime = (resBody) => {
 };
 
 const hospitalBedsByRequestedTime = (totalHospitalBeds, resBody) => {
-  const bedAvailability = normalizeDecimal(totalHospitalBeds * 0.35);
+  const bedAvailability = normalizeDecimal(totalHospitalBeds * 1);
   resBody.impact.hospitalBedsByRequestedTime = (
-    bedAvailability
+    bedAvailability - resBody.impact.severeCasesByRequestedTime
   );
 
   resBody.severeImpact.hospitalBedsByRequestedTime = (
-    bedAvailability
+    bedAvailability - resBody.severeImpact.severeCasesByRequestedTime
   );
 
   return resBody;
@@ -88,19 +88,5 @@ const covid19ImpactEstimator = (data) => {
 
   return resBody;
 };
-
-console.log(covid19ImpactEstimator({
-  region: {
-    name: 'Africa',
-    avgAge: 19.7,
-    avgDailyIncomeInUSD: 5,
-    avgDailyIncomePopulation: 0.71
-  },
-  periodType: 'days',
-  timeToElapse: 58,
-  reportedCases: 674,
-  population: 66622705,
-  totalHospitalBeds: 1380614
-}));
 
 export default covid19ImpactEstimator;
