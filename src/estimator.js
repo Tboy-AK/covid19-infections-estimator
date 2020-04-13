@@ -41,31 +41,61 @@ const infectionsByRequestedTime = (timeToElapse, resBody) => {
 
 // challenge 2
 const severeCasesByRequestedTime = (resBody) => {
-  resBody.impact.severeCasesByRequestedTime = (
+  resBody.impact.severeCasesByRequestedTime = normalizeDecimal(
     resBody.impact.infectionsByRequestedTime * 0.15
   );
 
-  resBody.severeImpact.severeCasesByRequestedTime = (
+  resBody.severeImpact.severeCasesByRequestedTime = normalizeDecimal(
     resBody.severeImpact.infectionsByRequestedTime * 0.15
   );
 
   return resBody;
 };
 
-const hospitalBedsByRequestedTime = (totalHospitalBeds, resBody) => {
+const severeCasesByRequestedTimeincode = (resBody, inCodeBody) => {
+  inCodeBody.impact.severeCasesByRequestedTime = (
+    resBody.impact.infectionsByRequestedTime * 0.15
+  );
+
+  inCodeBody.severeImpact.severeCasesByRequestedTime = (
+    resBody.severeImpact.infectionsByRequestedTime * 0.15
+  );
+
+  return inCodeBody;
+};
+
+const hospitalBedsByRequestedTime = (totalHospitalBeds, resBody, inCodeBody) => {
   const bedAvailability = (totalHospitalBeds * 1);
   resBody.impact.hospitalBedsByRequestedTime = normalizeDecimal(
-    bedAvailability - resBody.impact.severeCasesByRequestedTime
+    bedAvailability - inCodeBody.impact.severeCasesByRequestedTime
   );
 
   resBody.severeImpact.hospitalBedsByRequestedTime = normalizeDecimal(
-    bedAvailability - resBody.severeImpact.infectionsByRequestedTime
+    bedAvailability - inCodeBody.severeImpact.severeCasesByRequestedTime
   );
 
   return resBody;
 };
 
+const hospitalBedsByRequestedTimeincode = (totalHospitalBeds, inCodeBody) => {
+  const bedAvailability = (totalHospitalBeds * 1);
+  inCodeBody.impact.hospitalBedsByRequestedTime = (
+    bedAvailability - inCodeBody.impact.severeCasesByRequestedTime
+  );
+
+  inCodeBody.severeImpact.hospitalBedsByRequestedTime = (
+    bedAvailability - inCodeBody.severeImpact.severeCasesByRequestedTime
+  );
+
+  return inCodeBody;
+};
+
 const covid19ImpactEstimator = (data) => {
+  const inCodeBody = {
+    impact: {},
+    severeImpact: {}
+  };
+
   const {
     periodType, timeToElapse, reportedCases, totalHospitalBeds
   } = data;
@@ -84,7 +114,11 @@ const covid19ImpactEstimator = (data) => {
 
   severeCasesByRequestedTime(resBody);
 
-  hospitalBedsByRequestedTime(totalHospitalBeds, resBody);
+  severeCasesByRequestedTimeincode(resBody, inCodeBody);
+
+  hospitalBedsByRequestedTime(totalHospitalBeds, resBody, inCodeBody);
+
+  hospitalBedsByRequestedTimeincode(totalHospitalBeds, inCodeBody);
 
   return resBody;
 };
