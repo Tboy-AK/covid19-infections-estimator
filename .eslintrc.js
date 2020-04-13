@@ -21,6 +21,6 @@ module.exports = {
   rules: {
     "comma-dangle": ["error", "never"],
     "no-param-reassign": ["error", { "props": false }],
-    "linebreak-style": ["error", platform === "linux" ? "unix" : "windows"]
+    "linebreak-style": ["error", platform !== "linux" ? "windows" : "unix"]
   },
 };
