@@ -125,7 +125,7 @@ const covid19ImpactEstimator = (data) => {
   hospitalBedsByRequestedTime(totalHospitalBeds, resBody);
   casesForICUByRequestedTime(resBody);
   casesForVentilatorsByRequestedTime(resBody);
-  dollarsInFlight(timeToElapse, avgDailyIncomePopulation, avgDailyIncomeInUSD, resBody);
+  dollarsInFlight(daysToElapse, avgDailyIncomePopulation, avgDailyIncomeInUSD, resBody);
 
   return resBody;
 };
