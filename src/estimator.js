@@ -53,7 +53,7 @@ const severeCasesByRequestedTime = (resBody) => {
 };
 
 const hospitalBedsByRequestedTime = (totalHospitalBeds, resBody) => {
-  const bedAvailability = (totalHospitalBeds * 0.65);
+  const bedAvailability = (totalHospitalBeds * 1);
   resBody.impact.hospitalBedsByRequestedTime = normalizeDecimal(
     bedAvailability - resBody.impact.severeCasesByRequestedTime
   );
