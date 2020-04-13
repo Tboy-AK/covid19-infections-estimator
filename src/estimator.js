@@ -64,10 +64,52 @@ const hospitalBedsByRequestedTime = (totalHospitalBeds, resBody) => {
   return resBody;
 };
 
+// Challenge 3
+const casesForICUByRequestedTime = (resBody) => {
+  resBody.impact.casesForICUByRequestedTime = normalizeDecimal(
+    0.05 * resBody.impact.infectionsByRequestedTime
+  );
+
+  resBody.severeImpact.casesForICUByRequestedTime = normalizeDecimal(
+    0.05 * resBody.severeImpact.infectionsByRequestedTime
+  );
+
+  return resBody;
+};
+
+const casesForVentilatorsByRequestedTime = (resBody) => {
+  resBody.impact.casesForVentilatorsByRequestedTime = normalizeDecimal(
+    0.02 * resBody.impact.infectionsByRequestedTime
+  );
+
+  resBody.severeImpact.casesForVentilatorsByRequestedTime = normalizeDecimal(
+    0.02 * resBody.severeImpact.infectionsByRequestedTime
+  );
+
+  return resBody;
+};
+
+const dollarsInFlight = (timeToElapse, avgDailyIncomePopulation, avgDailyIncomeInUSD, resBody) => {
+  const factor = (avgDailyIncomePopulation * avgDailyIncomeInUSD) / timeToElapse;
+
+  resBody.impact.dollarsInFlight = normalizeDecimal(
+    resBody.impact.infectionsByRequestedTime * factor
+  );
+
+  resBody.severeImpact.dollarsInFlight = normalizeDecimal(
+    resBody.severeImpact.infectionsByRequestedTime * factor
+  );
+};
+
+// Main function
 const covid19ImpactEstimator = (data) => {
   const {
-    periodType, timeToElapse, reportedCases, totalHospitalBeds
+    region, periodType, timeToElapse, reportedCases, totalHospitalBeds
   } = data;
+
+  const {
+    avgDailyIncomeInUSD, avgDailyIncomePopulation
+  } = region;
 
   const daysToElapse = normalizeTimeToElapse(timeToElapse, periodType);
 
@@ -81,6 +123,10 @@ const covid19ImpactEstimator = (data) => {
   infectionsByRequestedTime(daysToElapse, resBody);
   severeCasesByRequestedTime(resBody);
   hospitalBedsByRequestedTime(totalHospitalBeds, resBody);
+  casesForICUByRequestedTime(resBody);
+  casesForVentilatorsByRequestedTime(resBody);
+  dollarsInFlight(timeToElapse, avgDailyIncomePopulation, avgDailyIncomeInUSD, resBody);
+
   return resBody;
 };
 
