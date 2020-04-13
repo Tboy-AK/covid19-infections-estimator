@@ -2,14 +2,19 @@
 const normalizeDecimal = (decimal) => Math.trunc(decimal);
 
 const normalizeTimeToElapse = (timeToElapse, periodType) => {
+  let daysToElapse;
   switch (periodType) {
     case 'weeks':
-      return (timeToElapse * 7);
+      daysToElapse = (timeToElapse * 7);
+      break;
     case 'months':
-      return (timeToElapse * 30);
+      daysToElapse = (timeToElapse * 30);
+      break;
     default:
-      return (timeToElapse);
+      daysToElapse = (timeToElapse);
+      break;
   }
+  return daysToElapse;
 };
 
 const currentlyInfected = (reportedCases, resBody) => {
@@ -48,12 +53,13 @@ const severeCasesByRequestedTime = (resBody) => {
 };
 
 const hospitalBedsByRequestedTime = (totalHospitalBeds, resBody) => {
+  const bedAvailability = (totalHospitalBeds * 0.35);
   resBody.impact.hospitalBedsByRequestedTime = normalizeDecimal(
-    0.65 * (totalHospitalBeds - resBody.impact.severeCasesByRequestedTime)
+    bedAvailability - resBody.impact.severeCasesByRequestedTime
   );
 
   resBody.severeImpact.hospitalBedsByRequestedTime = normalizeDecimal(
-    0.65 * (totalHospitalBeds - resBody.severeImpact.infectionsByRequestedTime)
+    bedAvailability - resBody.severeImpact.infectionsByRequestedTime
   );
 
   return resBody;
@@ -61,12 +67,10 @@ const hospitalBedsByRequestedTime = (totalHospitalBeds, resBody) => {
 
 const covid19ImpactEstimator = (data) => {
   const {
-    periodType, reportedCases, totalHospitalBeds
+    periodType, timeToElapse, reportedCases, totalHospitalBeds
   } = data;
 
-  let { timeToElapse } = data;
-
-  timeToElapse = normalizeTimeToElapse(timeToElapse, periodType);
+  const daysToElapse = normalizeTimeToElapse(timeToElapse, periodType);
 
   const resBody = {
     data,
@@ -76,7 +80,7 @@ const covid19ImpactEstimator = (data) => {
 
   currentlyInfected(reportedCases, resBody);
 
-  infectionsByRequestedTime(timeToElapse, resBody);
+  infectionsByRequestedTime(daysToElapse, resBody);
 
   severeCasesByRequestedTime(resBody);
 
@@ -84,5 +88,19 @@ const covid19ImpactEstimator = (data) => {
 
   return resBody;
 };
+
+console.log(covid19ImpactEstimator({
+  region: {
+    name: 'Africa',
+    avgAge: 19.7,
+    avgDailyIncomeInUSD: 5,
+    avgDailyIncomePopulation: 0.71
+  },
+  periodType: 'days',
+  timeToElapse: 58,
+  reportedCases: 674,
+  population: 66622705,
+  totalHospitalBeds: 1380614
+}));
 
 export default covid19ImpactEstimator;
