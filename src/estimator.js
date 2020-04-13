@@ -54,11 +54,11 @@ const severeCasesByRequestedTime = (resBody) => {
 
 const hospitalBedsByRequestedTime = (totalHospitalBeds, resBody) => {
   resBody.impact.hospitalBedsByRequestedTime = (
-    totalHospitalBeds - resBody.impact.severeCasesByRequestedTime + 1
+    (0.35 * totalHospitalBeds) - resBody.impact.severeCasesByRequestedTime + 1
   );
 
   resBody.severeImpact.hospitalBedsByRequestedTime = (
-    totalHospitalBeds - resBody.severeImpact.severeCasesByRequestedTime + 1
+    (0.35 * totalHospitalBeds) - resBody.severeImpact.severeCasesByRequestedTime + 1
   );
 
   return resBody;
