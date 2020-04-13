@@ -53,12 +53,12 @@ const severeCasesByRequestedTime = (resBody) => {
 };
 
 const hospitalBedsByRequestedTime = (totalHospitalBeds, resBody) => {
-  resBody.impact.hospitalBedsByRequestedTime = (
-    (0.35 * totalHospitalBeds) - resBody.impact.severeCasesByRequestedTime + 1
+  resBody.impact.hospitalBedsByRequestedTime = normalizeDecimal(
+    (0.35 * totalHospitalBeds) - resBody.impact.severeCasesByRequestedTime
   );
 
-  resBody.severeImpact.hospitalBedsByRequestedTime = (
-    (0.35 * totalHospitalBeds) - resBody.severeImpact.severeCasesByRequestedTime + 1
+  resBody.severeImpact.hospitalBedsByRequestedTime = normalizeDecimal(
+    (0.35 * totalHospitalBeds) - resBody.severeImpact.severeCasesByRequestedTime
   );
 
   return resBody;
