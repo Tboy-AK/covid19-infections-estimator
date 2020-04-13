@@ -1,4 +1,4 @@
-const normalizeDecimal = (decimal) => Math.floor(decimal);
+const normalizeDecimal = (decimal) => Math.trunc(decimal);
 
 const normalizeTimeToElapse = (timeToElapse, periodType) => {
   switch (periodType) {
@@ -46,12 +46,12 @@ const severeCasesByRequestedTime = (resBody) => {
 };
 
 const hospitalBedsByRequestedTime = (totalHospitalBeds, resBody) => {
-  const bedAvailability = normalizeDecimal(totalHospitalBeds * 0.35);
-  resBody.impact.hospitalBedsByRequestedTime = (
+  const bedAvailability = (totalHospitalBeds * 0.35);
+  resBody.impact.hospitalBedsByRequestedTime = normalizeDecimal(
     bedAvailability - resBody.impact.severeCasesByRequestedTime
   );
 
-  resBody.severeImpact.hospitalBedsByRequestedTime = (
+  resBody.severeImpact.hospitalBedsByRequestedTime = normalizeDecimal(
     bedAvailability - resBody.severeImpact.infectionsByRequestedTime
   );
 
