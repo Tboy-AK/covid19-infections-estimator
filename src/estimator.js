@@ -52,50 +52,20 @@ const severeCasesByRequestedTime = (resBody) => {
   return resBody;
 };
 
-const severeCasesByRequestedTimeincode = (resBody, inCodeBody) => {
-  inCodeBody.impact.severeCasesByRequestedTime = (
-    resBody.impact.infectionsByRequestedTime * 0.15
+const hospitalBedsByRequestedTime = (totalHospitalBeds, resBody) => {
+  const bedAvailability = normalizeDecimal(totalHospitalBeds * 0.35);
+  resBody.impact.hospitalBedsByRequestedTime = (
+    bedAvailability
   );
 
-  inCodeBody.severeImpact.severeCasesByRequestedTime = (
-    resBody.severeImpact.infectionsByRequestedTime * 0.15
-  );
-
-  return inCodeBody;
-};
-
-const hospitalBedsByRequestedTime = (totalHospitalBeds, resBody, inCodeBody) => {
-  const bedAvailability = (totalHospitalBeds * 1);
-  resBody.impact.hospitalBedsByRequestedTime = normalizeDecimal(
-    bedAvailability - inCodeBody.impact.severeCasesByRequestedTime
-  );
-
-  resBody.severeImpact.hospitalBedsByRequestedTime = normalizeDecimal(
-    bedAvailability - inCodeBody.severeImpact.severeCasesByRequestedTime
+  resBody.severeImpact.hospitalBedsByRequestedTime = (
+    bedAvailability
   );
 
   return resBody;
 };
 
-const hospitalBedsByRequestedTimeincode = (totalHospitalBeds, inCodeBody) => {
-  const bedAvailability = (totalHospitalBeds * 1);
-  inCodeBody.impact.hospitalBedsByRequestedTime = (
-    bedAvailability - inCodeBody.impact.severeCasesByRequestedTime
-  );
-
-  inCodeBody.severeImpact.hospitalBedsByRequestedTime = (
-    bedAvailability - inCodeBody.severeImpact.severeCasesByRequestedTime
-  );
-
-  return inCodeBody;
-};
-
 const covid19ImpactEstimator = (data) => {
-  const inCodeBody = {
-    impact: {},
-    severeImpact: {}
-  };
-
   const {
     periodType, timeToElapse, reportedCases, totalHospitalBeds
   } = data;
@@ -114,13 +84,23 @@ const covid19ImpactEstimator = (data) => {
 
   severeCasesByRequestedTime(resBody);
 
-  severeCasesByRequestedTimeincode(resBody, inCodeBody);
-
-  hospitalBedsByRequestedTime(totalHospitalBeds, resBody, inCodeBody);
-
-  hospitalBedsByRequestedTimeincode(totalHospitalBeds, inCodeBody);
+  hospitalBedsByRequestedTime(totalHospitalBeds, resBody);
 
   return resBody;
 };
+
+console.log(covid19ImpactEstimator({
+  region: {
+    name: 'Africa',
+    avgAge: 19.7,
+    avgDailyIncomeInUSD: 5,
+    avgDailyIncomePopulation: 0.71
+  },
+  periodType: 'days',
+  timeToElapse: 58,
+  reportedCases: 674,
+  population: 66622705,
+  totalHospitalBeds: 1380614
+}));
 
 export default covid19ImpactEstimator;
