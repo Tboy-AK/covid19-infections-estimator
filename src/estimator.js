@@ -77,13 +77,9 @@ const covid19ImpactEstimator = (data) => {
   };
 
   currentlyInfected(reportedCases, resBody);
-  console.log(resBody);
   infectionsByRequestedTime(daysToElapse, resBody);
-  console.log(resBody);
   severeCasesByRequestedTime(resBody);
-  console.log(resBody);
   hospitalBedsByRequestedTime(totalHospitalBeds, resBody);
-  console.log(resBody);
   return resBody;
 };
 
