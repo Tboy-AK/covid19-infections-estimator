@@ -1,5 +1,3 @@
-const platform = require('os').platform();
-
 module.exports = {
   env: {
     browser: true,
@@ -20,7 +18,6 @@ module.exports = {
   },
   rules: {
     "comma-dangle": ["error", "never"],
-    "no-param-reassign": ["error", { "props": false }],
-    "linebreak-style": ["error", platform !== "linux" ? "windows" : "unix"]
+    "no-param-reassign": ["error", { "props": false }]
   },
 };
