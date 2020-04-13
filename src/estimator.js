@@ -34,11 +34,11 @@ const infectionsByRequestedTime = (timeToElapse, resBody) => {
 };
 
 const severeCasesByRequestedTime = (resBody) => {
-  resBody.impact.severeCasesByRequestedTime = (
+  resBody.impact.severeCasesByRequestedTime = normalizeDecimal(
     resBody.impact.infectionsByRequestedTime * 0.15
   );
 
-  resBody.severeImpact.severeCasesByRequestedTime = (
+  resBody.severeImpact.severeCasesByRequestedTime = normalizeDecimal(
     resBody.severeImpact.infectionsByRequestedTime * 0.15
   );
 
@@ -68,9 +68,9 @@ const covid19ImpactEstimator = (data) => {
   timeToElapse = normalizeTimeToElapse(timeToElapse, periodType);
 
   const resBody = {
-    data, // the input data you got
-    impact: {}, // your best case estimation
-    severeImpact: {} // your severe case estimation
+    data,
+    impact: {},
+    severeImpact: {}
   };
 
   currentlyInfected(reportedCases, resBody);
