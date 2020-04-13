@@ -1,3 +1,4 @@
+// challenge 1
 const normalizeDecimal = (decimal) => Math.trunc(decimal);
 
 const normalizeTimeToElapse = (timeToElapse, periodType) => {
@@ -33,6 +34,7 @@ const infectionsByRequestedTime = (timeToElapse, resBody) => {
   return resBody;
 };
 
+// challenge 2
 const severeCasesByRequestedTime = (resBody) => {
   resBody.impact.severeCasesByRequestedTime = normalizeDecimal(
     resBody.impact.infectionsByRequestedTime * 0.15
@@ -46,13 +48,12 @@ const severeCasesByRequestedTime = (resBody) => {
 };
 
 const hospitalBedsByRequestedTime = (totalHospitalBeds, resBody) => {
-  const bedAvailability = (totalHospitalBeds * 0.35);
   resBody.impact.hospitalBedsByRequestedTime = normalizeDecimal(
-    bedAvailability - resBody.impact.severeCasesByRequestedTime
+    0.35 * (totalHospitalBeds - resBody.impact.severeCasesByRequestedTime)
   );
 
   resBody.severeImpact.hospitalBedsByRequestedTime = normalizeDecimal(
-    bedAvailability - resBody.severeImpact.infectionsByRequestedTime
+    0.35 * (totalHospitalBeds - resBody.severeImpact.infectionsByRequestedTime)
   );
 
   return resBody;
