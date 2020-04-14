@@ -3,47 +3,33 @@ const cors = require('cors');
 const xmljs = require('xml-js');
 const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
+const morgan = require('morgan');
+const fs = require('fs');
+const path = require('path');
 const estimator = require('./estimator');
 
 dotenv.config();
 
 const router = express.Router();
-const server = express();
+const app = express();
 
-server.use(cors());
-server.use(express.urlencoded({ extended: true }));
-server.use(express.json());
-server.use(cookieParser());
+// Save access log to file
+const logStream = fs.createWriteStream(path.join(__dirname, '../db/access.log'), { flags: 'a' });
 
+app.use(morgan((tokens, req, res) => `${[
+  tokens.method(req, res),
+  tokens.url(req, res),
+  tokens.status(req, res),
+  tokens['response-time'](req, res)
+].join('\t')}\n`, { stream: logStream }));
+
+app.use(cors());
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+// Main route
 router.post('/', (req, res) => {
-  /* const {
-    name,
-    avgAge,
-    avgDailyIncomeInUSD,
-    avgDailyIncomePopulation,
-    periodType,
-    timeToElapse,
-    reportedCases,
-    population,
-    totalHospitalBeds
-  } = req.body;
-
-  const region = {
-    name,
-    avgAge,
-    avgDailyIncomeInUSD,
-    avgDailyIncomePopulation
-  };
-
-  const inputData = {
-    region,
-    periodType,
-    timeToElapse,
-    reportedCases,
-    population,
-    totalHospitalBeds
-  }; */
-
   const outputData = estimator(req.body);
 
   const jsonCookieOptions = {
@@ -58,14 +44,24 @@ router.post('/', (req, res) => {
     httpOnly: true
   };
 
+  const logCookieOptions = {
+    path: '/api/v1/on-covid-19/logs',
+    domain: `.${process.env.DOMAIN_NAME}`,
+    httpOnly: true
+  };
+
   if (process.env.DOMAIN_NAME !== 'herokuapp.com') {
     delete jsonCookieOptions.domain;
     delete xmlCookieOptions.domain;
+    delete logCookieOptions.domain;
   }
+
+  const reqLog = fs.readFileSync(path.join(__dirname, '../db/access.log'), { encoding: 'utf8' });
 
   res
     .cookie('estimate-data-json', JSON.stringify(outputData), jsonCookieOptions)
     .cookie('estimate-data-xml', JSON.stringify(outputData), xmlCookieOptions)
+    .cookie('estimate-data-logs', reqLog, logCookieOptions)
     .send(outputData);
 });
 
@@ -73,18 +69,25 @@ router.post('/', (req, res) => {
 router.get('/json', (req, res) => {
   res
     .status(200)
-    .send(JSON.stringify(req.cookies['estimate-data']));
+    .send(JSON.stringify(req.cookies['estimate-data-json']));
 });
 
 // XML route
 router.get('/xml', (req, res) => {
   res
     .status(200)
-    .send(xmljs.xml2json(JSON.stringify(req.cookies['estimate-data']),
+    .send(xmljs.xml2json(JSON.stringify(req.cookies['estimate-data-xml']),
       { compact: true, ignoreComment: true, spaces: 4 }));
 });
 
-server.use((req, res, next) => {
+// logs route
+router.get('/logs', (req, res) => {
+  res
+    .status(200)
+    .send(req.cookies['estimate-data-logs']);
+});
+
+app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Vary', 'Origin');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization, Set-Cookie');
@@ -93,6 +96,6 @@ server.use((req, res, next) => {
   next();
 });
 
-server.use('/api/v1/on-covid-19', router);
+app.use('/api/v1/on-covid-19', router);
 
-module.exports = server;
+module.exports = app;

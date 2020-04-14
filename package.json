@@ -7,13 +7,15 @@
   "private": false,
   "scripts": {
     "lint": "eslint ./src/",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "host": "git push heroku assessment:master"
   },
   "dependencies": {
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "morgan": "^1.10.0",
     "on-covid-19": "^0.1.3",
     "xml-js": "^1.6.11"
   },
