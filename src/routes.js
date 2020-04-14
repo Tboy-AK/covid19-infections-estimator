@@ -28,19 +28,13 @@ app.use(router.post('/', async (req, res) => {
 
   // Set cookie options
   const jsonCookieOptions = {
-    path: '/api/v1/on-covid-19/json',
+    path: '/json',
     domain: `.${process.env.DOMAIN_NAME}`,
     httpOnly: true
   };
 
   const xmlCookieOptions = {
-    path: '/api/v1/on-covid-19/xml',
-    domain: `.${process.env.DOMAIN_NAME}`,
-    httpOnly: true
-  };
-
-  const logCookieOptions = {
-    path: '/api/v1/on-covid-19/logs',
+    path: '/xml',
     domain: `.${process.env.DOMAIN_NAME}`,
     httpOnly: true
   };
@@ -48,7 +42,6 @@ app.use(router.post('/', async (req, res) => {
   if (process.env.DOMAIN_NAME !== 'herokuapp.com') {
     delete jsonCookieOptions.domain;
     delete xmlCookieOptions.domain;
-    delete logCookieOptions.domain;
   }
 
   const { statusCode } = res;
