@@ -23,18 +23,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Main route
-app.use(router.post('/', async (req, res) => {
+router.post('/', async (req, res) => {
   const outputData = estimator(req.body);
 
   // Set cookie options
   const jsonCookieOptions = {
-    path: '/json',
+    path: '/api/v1/on-covid-19/json',
     domain: `.${process.env.DOMAIN_NAME}`,
     httpOnly: true
   };
 
   const xmlCookieOptions = {
-    path: '/xml',
+    path: '/api/v1/on-covid-19/xml',
     domain: `.${process.env.DOMAIN_NAME}`,
     httpOnly: true
   };
@@ -59,7 +59,7 @@ app.use(router.post('/', async (req, res) => {
     .cookie('estimate-data-json', JSON.stringify(outputData), jsonCookieOptions)
     .cookie('estimate-data-xml', JSON.stringify(outputData), xmlCookieOptions)
     .send(outputData);
-}));
+});
 
 // JSON route
 router.get('/json', (req, res) => {
