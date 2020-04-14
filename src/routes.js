@@ -16,7 +16,7 @@ server.use(express.json());
 server.use(cookieParser());
 
 router.post('/', (req, res) => {
-  const {
+  /* const {
     name,
     avgAge,
     avgDailyIncomeInUSD,
@@ -42,9 +42,9 @@ router.post('/', (req, res) => {
     reportedCases,
     population,
     totalHospitalBeds
-  };
+  }; */
 
-  const outputData = estimator(inputData);
+  const outputData = estimator(req.body);
 
   const jsonCookieOptions = {
     path: '/api/v1/on-covid-19/json',
