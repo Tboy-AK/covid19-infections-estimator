@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Main route
-router.post('/', async (req, res) => {
+router.post('/', (req, res) => {
   const outputData = estimator(req.body);
 
   // Set cookie options
