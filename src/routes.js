@@ -20,8 +20,8 @@ app.use(morgan((tokens, req, res) => `${[
   tokens.method(req, res),
   tokens.url(req, res),
   tokens.status(req, res),
-  tokens['response-time'](req, res)
-].join('\t')}\n`, { stream: logStream }));
+  `${tokens['response-time'](req, res)}ms`
+].join('    ')}\n`, { stream: logStream }));
 
 app.use(cors());
 app.use(cookieParser());
