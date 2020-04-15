@@ -56,8 +56,8 @@ router.post('/', (req, res) => {
   });
 
   res
-    .cookie('estimate-data-json', JSON.stringify(outputData), jsonCookieOptions)
-    .cookie('estimate-data-xml', JSON.stringify(outputData), xmlCookieOptions)
+    .cookie('estimate-data-json', outputData, jsonCookieOptions)
+    .cookie('estimate-data-xml', outputData, xmlCookieOptions)
     .send(outputData);
 });
 
@@ -65,14 +65,14 @@ router.post('/', (req, res) => {
 router.get('/json', (req, res) => {
   res
     .status(200)
-    .send(JSON.parse(req.cookies['estimate-data-json']));
+    .send(req.cookies['estimate-data-json']);
 });
 
 // XML route
 router.get('/xml', (req, res) => {
   res
     .status(200)
-    .send(xmljs.json2xml(JSON.parse(req.cookies['estimate-data-xml']),
+    .send(xmljs.json2xml(req.cookies['estimate-data-xml'],
       { compact: true, ignoreComment: true, spaces: 4 }));
 });
 
