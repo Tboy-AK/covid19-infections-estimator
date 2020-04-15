@@ -26,22 +26,14 @@ app.use(express.json());
 router.post('/', (req, res) => {
   const outputData = estimator(req.body);
 
-  // Set cookie options
-  const jsonCookieOptions = {
-    path: '/api/v1/on-covid-19/json',
-    domain: `.${process.env.DOMAIN_NAME}`,
-    httpOnly: true
-  };
-
-  const xmlCookieOptions = {
-    path: '/api/v1/on-covid-19/xml',
+  const cookieOptions = {
+    path: '/',
     domain: `.${process.env.DOMAIN_NAME}`,
     httpOnly: true
   };
 
   if (process.env.DOMAIN_NAME !== 'herokuapp.com') {
-    delete jsonCookieOptions.domain;
-    delete xmlCookieOptions.domain;
+    delete cookieOptions.domain;
   }
 
   const { statusCode } = res;
@@ -56,8 +48,7 @@ router.post('/', (req, res) => {
   });
 
   res
-    .cookie('estimate-data-json', JSON.stringify(outputData), jsonCookieOptions)
-    .cookie('estimate-data-xml', JSON.stringify(outputData), xmlCookieOptions)
+    .cookie('estimate-data', JSON.stringify(outputData), cookieOptions)
     .send(outputData);
 });
 
@@ -65,14 +56,14 @@ router.post('/', (req, res) => {
 router.get('/json', (req, res) => {
   res
     .status(200)
-    .json(req.cookies['estimate-data-json']);
+    .send(JSON.parse(req.cookies['estimate-data']));
 });
 
 // XML route
 router.get('/xml', (req, res) => {
   res
     .status(200)
-    .send(xmljs.json2xml(JSON.parse(req.cookies['estimate-data-xml']),
+    .send(xmljs.json2xml(JSON.parse(req.cookies['estimate-data']),
       { compact: true, ignoreComment: true, spaces: 4 }));
 });
 
