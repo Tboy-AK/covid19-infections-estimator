@@ -65,7 +65,7 @@ router.get('/json', (req, res) => pool.query(
   .then((result) => res
     .status(200)
     .send(result.rows[0].output_data))
-  .catch((err) => null));
+  .catch(() => null));
 
 // XML route
 router.get('/xml', (req, res) => pool.query(
@@ -75,7 +75,7 @@ router.get('/xml', (req, res) => pool.query(
     .status(200)
     .send(xmljs.json2xml(result.rows[0].output_data,
       { compact: true, ignoreComment: true, spaces: 4 })))
-  .catch((err) => null));
+  .catch(() => null));
 
 // Logs route
 router.get('/logs', (req, res) => pool.query('SELECT log_stream FROM request_logs')
