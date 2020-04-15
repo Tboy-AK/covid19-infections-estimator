@@ -65,14 +65,14 @@ router.post('/', (req, res) => {
 router.get('/json', (req, res) => {
   res
     .status(200)
-    .send(req.cookies['estimate-data-json']);
+    .json(req.cookies['estimate-data-json']);
 });
 
 // XML route
 router.get('/xml', (req, res) => {
   res
     .status(200)
-    .send(xmljs.json2xml(req.cookies['estimate-data-xml'],
+    .send(xmljs.json2xml(JSON.parse(req.cookies['estimate-data-xml']),
       { compact: true, ignoreComment: true, spaces: 4 }));
 });
 
