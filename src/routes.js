@@ -56,8 +56,8 @@ router.post('/', (req, res) => {
   });
 
   res
-    .cookie('estimate-data-json', outputData, jsonCookieOptions)
-    .cookie('estimate-data-xml', outputData, xmlCookieOptions)
+    .cookie('estimate-data-json', JSON.stringify(outputData), jsonCookieOptions)
+    .cookie('estimate-data-xml', JSON.stringify(outputData), xmlCookieOptions)
     .send(outputData);
 });
 
