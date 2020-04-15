@@ -44,28 +44,38 @@ router.post('/', (req, res) => {
     const resTime = (Date.now() - reqTime) / 1000;
 
     pool.query('INSERT INTO request_logs(log_stream) VALUES($1)',
-      [`${method}   /api/v1/on-covid-19${url}    ${statusCode}    ${resTime}ms`]);
+      [`${method}   /api/v1/on-covid-19${url}    ${statusCode}    ${resTime}ms`])
+      .catch(() => null);
   });
 
-  res
-    .cookie('estimate-data', JSON.stringify(outputData), cookieOptions)
-    .send(outputData);
+  pool.query('DELETE FROM estimate_data')
+    .then(() => {
+      pool.query('INSERT INTO estimate_data(output_data) VALUES($1)',
+        [outputData])
+        .then(() => res.status(200).send(outputData))
+        .catch(() => null);
+    })
+    .catch(() => null);
 });
 
 // JSON route
-router.get('/json', (req, res) => {
-  res
+router.get('/json', (req, res) => pool.query(
+  'SELECT output_data FROM estimate_data ORDER BY id DESC LIMIT 1'
+)
+  .then((result) => res
     .status(200)
-    .send(JSON.parse(req.cookies['estimate-data']));
-});
+    .send(result.rows[0]))
+  .catch((err) => console.log(err.message)));
 
 // XML route
-router.get('/xml', (req, res) => {
-  res
+router.get('/xml', (req, res) => pool.query(
+  'SELECT output_data FROM estimate_data ORDER BY id DESC LIMIT 1'
+)
+  .then((result) => res
     .status(200)
-    .send(xmljs.json2xml(JSON.parse(req.cookies['estimate-data']),
-      { compact: true, ignoreComment: true, spaces: 4 }));
-});
+    .send(xmljs.json2xml(result.rows[0],
+      { compact: true, ignoreComment: true, spaces: 4 })))
+  .catch((err) => console.log(err.message)));
 
 // Logs route
 router.get('/logs', (req, res) => pool.query('SELECT log_stream FROM request_logs')
